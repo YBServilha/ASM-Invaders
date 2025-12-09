@@ -1,4 +1,4 @@
-# Invasão Espacial (Asm Invaders)
+# ASM Invaders
 
 Projeto de jogo estilo “Space Invaders” feito em Assembly para o Processador-ICMC. A ideia é usar um “Text Drawer” que desenha caracteres em uma tela 30×40 e, quando dá, aplicar cor por célula usando um valor 16 bits no `OUTCHAR`.
 
@@ -98,8 +98,8 @@ No nosso jogo:
 
 1. Clone o repositório Processador‑ICMC (contém o montador e o simulador).
 2. Copie `jogo.asm` e `jogo.mif` para a pasta do montador/simulador (ou para o diretório indicado no Manual do Processador‑ICMC).
-3. Monte o `.asm` com o montador(ex: ./montador Hello4.asm Hello4.mif). Consulte o Manual para o comando correto, caso apresente erro.
-4. Execute o simulador (ex: ./simulador jogo.mif charmap.mif). Consulte o simulador para o comando correto, caso apresente erro.
+3. Monte o `.asm` com o montador(ex: ./montador Hello4.asm Hello4.mif). Consulte o Manual do Processador‑ICMC para o comando correto caso apresente erro.  
+4. Execute o simulador (ex: ./simulador jogo.mif charmap.mif). Consulte o Manual do Processador‑ICMC para o comando correto caso apresente erro.  
 5. Na tela inicial do jogo, pressione `SPACE` para começar.
 
 
