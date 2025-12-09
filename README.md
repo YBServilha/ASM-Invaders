@@ -107,10 +107,10 @@ No nosso jogo:
 
 ## Créditos
 
-- Código do jogo:
 - Caio Mendes Laprega;
 - Larry Felipe Silva Gonçalves;
 - Yan Barbosa Servilha
+
   
 - Processador: [Processador-ICMC](https://github.com/simoesusp/Processador-ICMC)
 
