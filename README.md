@@ -111,7 +111,7 @@ No nosso jogo:
 - Larry Felipe Silva Gonçalves;
 - Yan Barbosa Servilha
 
-  
+<br>
 - Processador: [Processador-ICMC](https://github.com/simoesusp/Processador-ICMC)
 
 > Observação: A gente comentou bastante o `.asm` para ficar didático. Qualquer coisa, vale olhar as funções com calma que tem explicação do que cada uma está fazendo.
