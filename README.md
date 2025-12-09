@@ -107,7 +107,11 @@ No nosso jogo:
 
 ## Créditos
 
-- Código do jogo: Caio Mendes Laprega, Larry Felipe Silva Gonçalves, Yan Barbosa Servilha
-- Base: [Processador-ICMC](https://github.com/simoesusp/Processador-ICMC)
+- Código do jogo:
+- Caio Mendes Laprega;
+- Larry Felipe Silva Gonçalves;
+- Yan Barbosa Servilha
+  
+- Processador: [Processador-ICMC](https://github.com/simoesusp/Processador-ICMC)
 
 > Observação: A gente comentou bastante o `.asm` para ficar didático. Qualquer coisa, vale olhar as funções com calma que tem explicação do que cada uma está fazendo.
