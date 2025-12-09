@@ -17,7 +17,7 @@ Foi feito para aprender:
 - A arena tem paredes nas colunas 10 (esquerda) e 30 (direita).
 - A nave ocupa 1 célula; cada inimigo ocupa 3 células seguidas na horizontal.
 
-## Cores (seu `OUTCHAR` aceita 16 bits)
+## Cores
 
 A gente soma um “offset de cor” em cima do código ASCII do caractere:
 
