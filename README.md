@@ -98,8 +98,7 @@ No nosso jogo:
 
 - Use o repositório do Processador-ICMC (simulador/montador estão lá).
 - Monte o `.asm` com o montador deles (veja “Manual” do repo).
-- Rode no simulador que suporte `OUTCHAR` com cor (OpenGL normalmente).
-- Se usar a versão simples (monocromática), a cor pode não aparecer.
+- Pronto o jogo estará funcionando!
 
 
 ## Constantes que aparecem no código
