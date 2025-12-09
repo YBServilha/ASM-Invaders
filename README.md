@@ -101,17 +101,6 @@ No nosso jogo:
 - Rode no simulador que suporte `OUTCHAR` com cor (OpenGL normalmente).
 - Se usar a versão simples (monocromática), a cor pode não aparecer.
 
-## Como trocar as cores
-
-- Pegue o caractere (ex.: `'*'` que é ASCII 42), some com o offset e mande no `OUTCHAR`.
-- Exemplo: Nave azul clara:
-  ```
-  loadn r7, #42
-  load  r6, cor_azul_claro  ; 3584
-  add   r7, r7, r6
-  outchar r7, r1
-  ```
-- Para paredes, faça igual com os códigos `40`, `41` e `61`.
 
 ## Constantes que aparecem no código
 
@@ -121,13 +110,6 @@ No nosso jogo:
 - 1050: piso da arena (não deixa passar)
 - 1080: chão para matar inimigo (amarra remoção)
 - Slots de inimigos: `r3`, `r5`, `r4`
-
-## Se der ruim…
-
-- Sem cor? Confere se seu simulador aceita o `OUTCHAR` 16 bits. Se for monocromático, não tem como colorir.
-- Inimigos não aparecem? Muda o `% 15` pra `% 10` (ou outro) para aumentar a chance.
-- Nave atravessa parede? Veja os testes de coluna (`pos % 40 == 10` ou `== 30`) nas funções de movimento.
-- Jogo muito lento/rápido? Ajuste os valores do `delay` ou o mínimo de `game_speed`.
 
 ## Créditos
 
