@@ -436,7 +436,7 @@ spawn_enemy:
     jne try_spawn_r5        ; Se estiver: vai para o slot 2 (r5)
     call get_random_pos     ; Se não estiver, continua criando o inimigo
     mov r3, r7
-    loadn r0, #'X'          ; caractere do inimigo
+    loadn r0, #'X'
     loadn r1, #2304         ; Carrega a cor VERMELHO
     add r0, r0, r1          ; Soma: X + Vermelho = X Vermelho
     outchar r0, r3
@@ -475,16 +475,6 @@ spawn_enemy:
 
 
 ; - MOVIMENTA OS INIMIGOS ATÉ O FINAL DA TELA, E ELIMINA SE NECESSÁRIO
-
-; Para cada slot com inimigo:
-;   1) Apaga a posição atual (3 espaços pretos)
-;   2) Desce uma linha (pos += 40)
-;   3) Se passou do chão (pos > 1080), elimina e soma score
-;   4) Se não, redesenha 'X' vermelho nas 3 colunas
-; Entradas: r3,r5,r4 (posições atuais dos inimigos)
-; Saídas: atualiza r3/r5/r4; zera slot ao eliminar
-; Efeitos: outchar
-; -------------------------------------------------
 move_enemies:
     push r0
     push r1
@@ -610,42 +600,29 @@ move_enemies:
 ;=================================================
 
 ; - IMPRIME AS PAREDES DO JOGO
-
-; Desenha as paredes da arena:
-;   - Esquerda: '|' (código 40) em 22 segmentos verticais
-;   - Direita : '|' (código 41) em 22 segmentos verticais
-;   - Base    : '_' (código 61) em 21 segmentos horizontais
-; Entradas: nenhuma
-; Saídas: escreve os caracteres nas posições corretas da tela
-; -------------------------------------------------
-
 print_cage:
   push r1
   push r2
   push r3
   push r4
 
-
-; Parede esquerda (22 blocos verticais)
-  loadn r1, #210 ; posição inicial da parede esquerda
-  loadn r2, #40 ; caractere '|'
-  loadn r3, #0 
-  loadn r4, #22 ; altura
+  loadn r1, #210
+  loadn r2, #40
+  loadn r3, #0
+  loadn r4, #22
 
   print_esq:
   outchar r2, r1
-  add r1, r1, r2 ; avança 40 posições (uma linha)
+  add r1, r1, r2
   inc r3
   cmp r3, r4
   jne print_esq
 
-
- ; Parede direita (22 blocos verticais)
-  loadn r1, #230 ; posição inicial da parede direita
-  loadn r2, #41 ; caractere '|'
+  loadn r1, #230
+  loadn r2, #41
   loadn r3, #0
   loadn r4, #22
-  loadn r5, #40 ; largura para avançar linha
+  loadn r5, #40
 
   print_dir:
   outchar r2, r1
@@ -654,10 +631,8 @@ print_cage:
   cmp r3, r4
   jne print_dir
 
-
- ; Base inferior (21 blocos horizontais)
-  loadn r1, #1090 ; posição inicial da base
-  loadn r2, #61 ; caractere '_'
+  loadn r1, #1090
+  loadn r2, #61
   loadn r3, #0
   loadn r4, #21
 
@@ -676,24 +651,20 @@ print_cage:
 
 
 ; - TELA DE GAME OVER 
-; -------------------------------------------------
-; game_over_screen
-; Limpa tela, imprime estático de game over,
-; mostra pontuação final e retorna ao main.
-; -------------------------------------------------
 game_over_screen:
     call clear_screen          
     call print_gameover_static 
     
-    loadn r1, #664    ; posição para imprimir score final         
+
+   
+
+    
+    loadn r1, #664             
     call print_score_final     
+    
+  
 
-    jmp main   ; reinicia fluxo (espera SPACE)
-
-; -------------------------------------------------
-; print_gameover_static
-; Imprime as 30 linhas da tela de game over.
-; -------------------------------------------------             
+    jmp main               
     
 print_gameover_static:
     push r0
@@ -725,9 +696,6 @@ print_gameover_static:
     
     
 ; - IMPRIME O SCORE NA TELA
-; Imprime o score atual em 3 dígitos (centena, dezena, unidade),
-; colorido em amarelo, em posições fixas 243, 244 e 245.
-
 print_score:
     push r0
     push r1
@@ -737,7 +705,7 @@ print_score:
     push r5
     push r6 ; Protege r6 que será usado como caractere colorido
 
-    load r0, score ; Valor atual do SCORE
+    load r0, score
     loadn r4, #10 ; Divisor 10
     loadn r2, #48 ; ASCII '0'
     loadn r5, #2816 ; Carrega a cor AMARELO
@@ -782,29 +750,24 @@ print_score:
     
     
 ; - IMPRIME STRING
-; Imprime uma string terminada em 0 (byte zero) a partir da
-; posição r1 na tela, desenhando cada caractere em sequência.
-; Entradas: r0 = ponteiro da string, r1 = posição inicial na tela
-; Saídas: desenha os caracteres (sem aplicar cor)
-
 print_string_pos:
     push r0
     push r1
     push r2
     push r3
     
-    mov r2, r0  ; r2 = ponteiro corrente na string   
-    mov r3, r1. ; r3 = posição corrente na tela
+    mov r2, r0     
+    mov r3, r1      
     
     print_string_loop:
-        loadi r0, r2     ; lê o próximo byte (caractere) 
+        loadi r0, r2      
         loadn r1, #0
-        cmp r0, r1       ; se for 0 => fim da string
+        cmp r0, r1         
         jeq print_string_end
         
-        outchar r0, r3   ; desenha caractere sem cor
-        inc r2           ; próximo caractere       
-        inc r3           ; próxima posição da tela       
+        outchar r0, r3      
+        inc r2              
+        inc r3            
         jmp print_string_loop
         
     print_string_end:
@@ -816,17 +779,16 @@ print_string_pos:
     
     
 ; - LIMPA TODOS OS CARACTERES DA TELA
-; Limpa toda a tela (1200 posições) escrevendo 0 (preto).
 clear_screen:
     push r0
     push r1
     push r2
     
-    loadn r0, #0    ; cor 0/preto (e ASCII 0 = "nada") 
+    loadn r0, #0     
                      
     
-    loadn r1, #0     ; posição inicial
-    loadn r2, #1200  ; tamanho da tela (30*40)
+    loadn r1, #0     
+    loadn r2, #1200  
     
     clear_loop:
     outchar r0, r1  
@@ -841,9 +803,6 @@ clear_screen:
     
     
 ; - IMPRIME SOMENTE OS PONTOS NA TELA DE GAME OVER
-; Imprime a pontuação em 4 dígitos (milhar, centena, dezena, unidade)
-; a partir da posição r1 na tela (sem aplicar cor).
-
 print_score_final:
     push r0
     push r1
@@ -853,31 +812,27 @@ print_score_final:
     push r5
     push r6
 
-    load r0, score   ; valor do score   
-    loadn r2, #48     ; '0'  
-    loadn r4, #10     ; divisor  
-    mov r3, r1       ; posição corrente na tela  
+    load r0, score      
+    loadn r2, #48       
+    loadn r4, #10       
+    mov r3, r1          
 
    
-
-   ;Milhar
     loadn r5, #1000
-    div r6, r0, r5   ; r6 = score / 1000   
-    mod r6, r6, r4    ; r6 = milhar (0..9)
+    div r6, r0, r5      
+    mod r6, r6, r4    
     add r6, r6, r2      
     outchar r6, r3      
     inc r3              
 
-    ; Centena
+    
     loadn r5, #100
-    div r6, r0, r5    ; r6 = score / 100  
-    mod r6, r6, r4    ; r6 = centena (0..9)  
+    div r6, r0, r5      
+    mod r6, r6, r4      
     add r6, r6, r2
     outchar r6, r3
     inc r3
 
-
-    ; Dezena
     loadn r5, #10
     div r6, r0, r5      
     mod r6, r6, r4
@@ -886,8 +841,7 @@ print_score_final:
     inc r3
 
     
-    ; Unidade
-    mod r6, r0, r4    ; r6 = score % 10 
+    mod r6, r0, r4     
     add r6, r6, r2
     outchar r6, r3      
 
@@ -903,15 +857,10 @@ print_score_final:
     
 
 ;=================================================
-;             MISC (Utilitários)
+;             MISC
 ;=================================================
 
 ; - GERA UM VALOR ALEATORIO
-; random
-; Gera um número pseudo-aleatório (LCG) com alguns incrementos
-; extras para variar entre chamadas.
-; Saída: r7 = valor gerado
-
 random:
     push r0
     push r1
@@ -923,21 +872,17 @@ random:
     load r2, random_m
     load r3, random_x
 
-
- ; LCG: x = (a*x + c) mod m, com pequenas variações
     mul r3, r3, r0
     add r3, r3, r1
 
     ; === Incrementa o c a cada chamada ===
-    ; Incrementos extras para embaralhar
     inc r1
     inc r3
     store random_c, r1
     add r3, r3, r1
+    ; =============================================
     mod r3, r3, r2
 
-
-; Atualiza estado e retorna em r7
     store random_x, r3
     mov r7, r3
 
@@ -949,25 +894,17 @@ random:
 
 
 ; - TRANSFORMA O VALOR ALEATORIO EM UMA COORDENADA PARA GERAR UM INIMIGO
-; Converte r7 (aleatório) em uma posição válida para spawn
-; de inimigos no topo da arena (evitando paredes e fora da área útil).
-; Saída: r7 = posição escolhida
-
 get_random_pos:
     push r0
 
     call random
 
-; Escolhe uma coluna entre 17 possibilidades
     loadn r0, #17
     mod r7, r7, r0
 
-; Ajuste horizontal: +11 para centralizar e evitar paredes
     loadn r0, #11
     add r7, r7, r0
 
-
-; Ajuste vertical: +80 para ficar na zona superior visível
     loadn r0, #80
     add r7, r7, r0
 
@@ -976,31 +913,25 @@ get_random_pos:
 
 
 ; - CONSOME CICLOS DO PROCESSADOR PARA AJUSTAR A VELOCIDADE DO JOGO
-; delay
-; Controla a velocidade do jogo:
-;   - r1 = game_speed define quantas vezes o laço interno roda.
-;   - r0 = 100 é o laço interno, formando dois níveis de espera.
-; Quanto menor game_speed, mais rápido o jogo roda.
-
 delay:
   push r0
   push r1
   
-  load r1, game_speed   ; laço externo (velocidade atual)
+  load r1, game_speed   
   
   delay1:
-    loadn r0, #100    ; laço interno  
+    loadn r0, #100      
       delay2:
         dec r0
-        jnz delay2    ; roda 100 vezes
+        jnz delay2
         dec r1
-        jnz delay1    ; repete conforme game_speed
+        jnz delay1
         
   pop r1
   pop r0
   rts
 
-; - REINICIA A PONTUAÇÃO - limpa o SCORE
+; - REINICIA A PONTUAÇÃO
 limpa_score:
   push r0
   
@@ -1012,34 +943,29 @@ limpa_score:
         
         
 ; - ADICIONA PONTOS AO SCORE
-; Incrementa score (+1), imprime HUD e acelera gradualmente o jogo:
-;   - game_speed -= 10 por inimigo destruído
-;   - limite mínimo de velocidade: 200 (não acelera abaixo disso)
 add_score:
     push r0
     push r1
     
-    load r0, score  ; score atual     
+    load r0, score      
     loadn r1, #1       
-    add r0, r0, r1     ; +1 ponto 
+    add r0, r0, r1      
     
     store score, r0    
     
-    call print_score   ; atualiza HUD
+    call print_score   
     
-
-    ; Aceleração do jogo
     push r2             
     load r2, game_speed
     loadn r1, #10        
-    sub r2, r2, r1  ; diminui tempo de delay (mais rápido)
+    sub r2, r2, r1
     
  
-    loadn r1, #200    ; limite mínimo   
+    loadn r1, #200       
     cmp r2, r1
-    jel skip_speed_up   
+    jel skip_speed_up     
     
-    store game_speed, r2 ; atualiza velocidade
+    store game_speed, r2 
     
     skip_speed_up:
       pop r2
