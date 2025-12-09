@@ -1,13 +1,6 @@
 # ASM Invaders
 
-Projeto de jogo estilo “Space Invaders” feito em Assembly para o Processador-ICMC. A ideia é usar um “Text Drawer” que desenha caracteres em uma tela 30×40 e, quando dá, aplicar cor por célula usando um valor 16 bits no `OUTCHAR`.
-
-Foi feito para aprender:
-- Como desenhar e posicionar caracteres na tela
-- Como ler teclado e mover algo no mapa
-- Como fazer um loop de jogo simples (spawn, mover, checar colisão)
-- Como usar um gerador pseudo-aleatório e uma HUD de pontuação
-- Como aplicar cor em cima do ASCII (quando o simulador suporta)
+Projeto de jogo estilo “Space Invaders” feito em Assembly para o Processador-ICMC.
 
 ## Como funciona a tela
 
