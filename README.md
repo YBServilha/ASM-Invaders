@@ -112,5 +112,6 @@ No nosso jogo:
 - Yan Barbosa Servilha
 <br>
 - Processador: [Processador-ICMC](https://github.com/simoesusp/Processador-ICMC)
-<br>
+
+
 > Observação: A gente comentou bastante o `.asm` para ficar didático. Qualquer coisa, vale olhar as funções com calma que tem explicação do que cada uma está fazendo.
