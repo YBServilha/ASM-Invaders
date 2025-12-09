@@ -96,14 +96,10 @@ No nosso jogo:
 
 ## Como rodar
 
-- Use o repositório do Processador-ICMC (simulador/montador estão lá).
-- Monte o `.asm` com o montador deles (veja “Manual” do repo).
-- Pronto o jogo estará funcionando!
-- 
 1. Clone o repositório Processador‑ICMC (contém o montador e o simulador).
 2. Copie `jogo.asm` e `jogo.mif` para a pasta do montador/simulador (ou para o diretório indicado no Manual do Processador‑ICMC).
-3. Monte o `.asm` com o montador consulte o Manual para o comando correto.
-3. Monte o `.asm` com o simulador consulte o Manual para o comando correto.
+3. Monte o `.asm` com o montador(ex: ./montador Hello4.asm Hello4.mif). Consulte o Manual para o comando correto, caso apresente erro.
+4. Execute o simulador (ex: ./simulador jogo.mif charmap.mif). Consulte o simulador para o comando correto, caso apresente erro.
 5. Na tela inicial do jogo, pressione `SPACE` para começar.
 
 
