@@ -1,30 +1,41 @@
+; ==============================================================================
+;                              ASM INVADERS
+; ==============================================================================
+; Autores:
 ; Caio Mendes Laprega
 ; Larry Felipe Silva Gonçalves
 ; Yan Barbosa Servilha
+; ==============================================================================
 
-; INVASAO ESPACIAL
-
+; Pula a declaração de dados para ir direto ao início da execução
 jmp print_title_screen
 
-; --- Declaração de Variáveis Globais ---
-random_a: var #1
-random_c: var #1
-random_m: var #1
-random_x: var #1
-score: var #1
-game_speed: var #1
+; ==============================================================================
+;                         DECLARAÇÃO DE VARIÁVEIS
+; ==============================================================================
+random_a: var #1    ; Parâmetro 'a' para o gerador de números aleatórios
+random_c: var #1    ; Parâmetro 'c' para o gerador
+random_m: var #1    ; Parâmetro 'm' (módulo) para o gerador
+random_x: var #1    ; Semente atual (seed) do aleatório
+score: var #1       ; Armazena a pontuação atual
+game_speed: var #1  ; Controla o tempo do delay (dificuldade)
 
 ; --- Inicialização de Variáveis Estáticas ---
+; Valores escolhidos para o Algoritmo Linear Congruente (RNG)
 static random_a+#0, #25173 
 static random_c+#0, #13849
 static random_m+#0, #65535
 static random_x+#0, #7 
 static score+#0, #0
-static game_speed + #0, #3000
+static game_speed + #0, #3000 ; Começa com delay de 3000 ciclos
 
 
-; --- TELA INICIAL (30 Linhas de 40 Caracteres) ---
+; ==============================================================================
+;                         STRINGS E TELAS (DADOS)
+; ==============================================================================
 
+; --- TELA INICIAL ---
+; Desenho em ASCII art para o menu principal
 inicialLinha0  : string "                                        "
 inicialLinha1  : string "    |      ###   ###  #   #        |    "
 inicialLinha2  : string "    |     #   # #     ## ##        |    "
@@ -56,20 +67,19 @@ inicialLinha27 : string "   _|______________________________|_   "
 inicialLinha28 : string "                                        "
 inicialLinha29 : string "                                        "
 
-; --- TELA GAME OVER (30 Linhas de 40 Caracteres) ---
-
+; --- TELA GAME OVER ---
 gameoverLinha0  : string "                                        "
 gameoverLinha1  : string "                                        "
 gameoverLinha2  : string "                                        "
-gameoverLinha3  : string "      ___   __   __  __  ___            "
-gameoverLinha4  : string "     / __| /  | |  |/  || __|           "
-gameoverLinha5  : string "    | / _ / / | | |/| || _|             "
-gameoverLinha6  : string "    |____/_/|_| |_|  |_||___|           "
+gameoverLinha3  : string "        ___   __   __  __  ___          "
+gameoverLinha4  : string "       / __| /  | |  |/  || __|         "
+gameoverLinha5  : string "      | / _ / / | | |/| || _|           "
+gameoverLinha6  : string "      |____/_/|_| |_|  |_||___|         "
 gameoverLinha7  : string "                                        "
-gameoverLinha8  : string "       ___  _  _  ___  ___              "
-gameoverLinha9  : string "      / _ || || || __|| _ |             "
-gameoverLinha10 : string "     | (_) | |/ || _| |   /             "
-gameoverLinha11 : string "      |___/ |__/ |___||_|_|             "
+gameoverLinha8  : string "         ___  _  _  ___  ___            "
+gameoverLinha9  : string "        / _ || || || __|| _ |           "
+gameoverLinha10 : string "       | (_) | |/ || _| |   /           "
+gameoverLinha11 : string "        |___/ |__/ |___||_|_            "
 gameoverLinha12 : string "                                        "
 gameoverLinha13 : string "                                        "
 gameoverLinha14 : string "                                        "
@@ -80,7 +90,7 @@ gameoverLinha18 : string "                                        "
 gameoverLinha19 : string "                                        "
 gameoverLinha20 : string "                                        "
 gameoverLinha21 : string "                                        "
-gameoverLinha22 : string "      PRESS SPACE TO RESTART            "
+gameoverLinha22 : string "        PRESS SPACE TO RESTART          "
 gameoverLinha23 : string "                                        "
 gameoverLinha24 : string "                                        "
 gameoverLinha25 : string "                                        "
@@ -90,9 +100,12 @@ gameoverLinha28 : string "                                        "
 gameoverLinha29 : string "                                        "
 
 
+; ==============================================================================
+;                         ROTINAS DE INICIALIZAÇÃO
+; ==============================================================================
 
 ; - IMPRIME A TELA INICIAL DO JOGO
-; - (Fora da função main, pois não será mais impresso após um game over, onde a função main vai ser chamada novamente)
+; Percorre as strings da memória e imprime linha por linha
 print_title_screen:
     push r0
     push r1
@@ -100,19 +113,19 @@ print_title_screen:
     push r3
     push r4
     
-    loadn r0, #inicialLinha0   ; Endereço de memória na primeira string
-    loadn r1, #0               ; Posição na tela
-    loadn r2, #30              ; Contador de linhas
-    loadn r3, #41              ; Pulo para a próxima linha na memória        
-    loadn r4, #40              ; Pulo para a próxima linha na tela
+    loadn r0, #inicialLinha0   ; Aponta para o início da primeira string na RAM
+    loadn r1, #0               ; Posição inicial na tela (0 = canto superior esquerdo)
+    loadn r2, #30              ; Contador de linhas (tela tem 30 linhas)
+    loadn r3, #41              ; Tamanho da string na memória (40 chars + '\0')
+    loadn r4, #40              ; Tamanho da linha na tela (40 chars)
     
     print_title_loop:
-        call print_string_pos   
+        call print_string_pos   ; Imprime a linha apontada por r0 na posição r1
         
-        add r0, r0, r3          ; Avança para a próxima string na memória          
-        add r1, r1, r4          ; Avança para a próxima linha na tela
-        dec r2                 
-        jnz print_title_loop    
+        add r0, r0, r3          ; Pula para a próxima string na memória
+        add r1, r1, r4          ; Pula para a próxima linha visual
+        dec r2                  ; Decrementa contador
+        jnz print_title_loop    ; Repete até acabar as linhas
         
     pop r4
     pop r3
@@ -121,64 +134,64 @@ print_title_screen:
     pop r0
 
 
-
-; - MAIN - Inicio do jogo
+; ==============================================================================
+;                         MAIN (LOOP PRINCIPAL)
+; ==============================================================================
 main:
-  call limpa_score          ; Zera a pontuação na RAM
+  call limpa_score          ; Reinicia pontuação para 0
   loadn r0, #3000           
-  store game_speed, r0      ; Reseta a velocidade para a velocidade inicial do jogo
+  store game_speed, r0      ; Reinicia a velocidade padrão
   
-  ; LOOP DE ESPERA
-  ; Aguarda até o jogador apertar SPACE para continuar a execução
+  ; LOOP DE ESPERA (START)
+  ; Fica preso aqui até o jogador apertar ESPAÇO
   tela_de_inicio_botao:
   inchar  r3
   loadn   r4, #' '
   cmp r3, r4
   jne tela_de_inicio_botao
   
-  call clear_screen         ; Limpa a tela
-  call print_cage           ; Desenha a arena na tela
+  call clear_screen         ; Limpa a tela inicial
+  call print_cage           ; Desenha as bordas da arena
 
-
-  ; --- Inicialização dos Registradores do Jogo ---
+  ; --- Inicialização dos Registradores Principais ---
+  ; r1 = Posição do Jogador
+  ; r3, r4, r5 = Posições dos Inimigos (slots)
   
-  loadn r1, #1020           ; Posição da nave
+  loadn r1, #1020           ; Posição inicial da nave (centro-baixo)
   loadn r2, #0              
-  loadn r3, #0              ; Posição dos inimigos
-  loadn r4, #0              ; ''''''''''''''''''''
-  loadn r5, #0              ; ''''''''''''''''''''
+  loadn r3, #0              ; Slot Inimigo 1 (0 = vazio)
+  loadn r4, #0              ; Slot Inimigo 2 (0 = vazio)
+  loadn r5, #0              ; Slot Inimigo 3 (0 = vazio)
   loadn r6, #0
   loadn r7, #0
 
-
-; - LOOP - Loop principal de execução do jogo
+; - GAME LOOP - 
 loop:
-  call ship             ; Lê o teclado e move a nave
-  call spawn_enemy      ; Tenta criar novos inimigos
-  call delay            ; Controla a velocidade do jogo
-  call move_enemies     ; Faz os inimigos cairem
-  call collide_test     ; Verifica se a nave bateu em algum inimigo
+  call ship             ; 1. Lê input e move a nave
+  call spawn_enemy      ; 2. Tenta criar inimigo (baseado em RNG)
+  call delay            ; 3. Espera um pouco (controla FPS/Velocidade)
+  call move_enemies     ; 4. Move inimigos para baixo e redesenha
+  call collide_test     ; 5. Verifica se houve batida
 
-  jmp loop              ; Repete o loop
+  jmp loop              ; Repete infinitamente
 
 
-;=================================================
-;                NAVE (jogador)
-;=================================================
+; ==============================================================================
+;                            JOGADOR (NAVE)
+; ==============================================================================
 
-; - MOVIMENTAÇÃO DA NAVE
 ship:
   loadn r7, #0
-  outchar r7, r1        ; Apaga a nave da posição antiga (escreve preto)
+  outchar r7, r1        ; Apaga a nave da posição antiga (imprime preto)
 
     moveship:
     push r1
     push r3
     push r4
     push r5
-    inchar r1           ; Lê o teclado
+    inchar r1           ; Lê tecla pressionada (se houver)
     
-    ; VERIFICA AS TECLAS W A S D
+    ; --- Mapeamento de Teclas ---
     loadn r5, #'a'
     cmp r1, r5
     jeq  left
@@ -192,148 +205,142 @@ ship:
     cmp r1, r5
     jeq up
     
-    ; SE NADA FOI APERTADO, NÃO PULA PARA AS FUNÇÕES DE MOVER A NAVE
+    ; Se nenhuma tecla válida foi apertada, restaura registradores e desenha nave onde estava
     pop r5
     pop r4
     pop r3
     pop r1
-
     
-    ; DESENHA A NAVE NA NOVA POSIÇÃO (OU NA MESMA, SE NÃO MOVEU)
     move_back:
-    loadn r7, #42     ; Carrega o caractere da nave (#42)
-    loadn r6, #3584   ; Carrega a cor azul claro
-    add r7, r7, r6    ; Caractere + Cor = Caractere Azul Claro
-    outchar r7, r1    ; Imprime a nave colorida
+    loadn r7, #42     ; Char '*' (Asterisco) para a nave
+    loadn r6, #3584   ; Cor Azul Claro
+    add r7, r7, r6    ; Combina Char + Cor
+    outchar r7, r1    ; Desenha na tela
     rts
 
-    ; MOVIMENTO PARA A ESQUERDA
+    ; --- Lógica de Movimento ---
+    
+    ; ESQUERDA
     left:
     pop r5
     pop r4
     pop r3
     pop r1
-    dec r1      ; Move r1 para a esquerda
+    dec r1      ; Move posição -1
     
-    ; VERIFICA A PAREDE DA ESQUERDA, PARA EVITAR O JOGADOR DE SAIR DA ARENA
-    ; r1 = posição do jogador
+    ; Colisão com parede esquerda
     loadn r7, #40
-    mod r7, r1, r7
-    loadn r6, #10
+    mod r7, r1, r7      ; Pega o resto da divisão por 40 (coluna atual)
+    loadn r6, #10       ; Parede esquerda está na coluna 10
     cmp r6, r7
-    jeq move_left_over
-    cmp r1, r3
-    call collide_test   ; Verifica se bateu em algum inimigo quando andou
+    jeq move_left_over  ; Se bateu, desfaz movimento
+    cmp r1, r3          ; Verifica se bateu em inimigo ao andar
+    call collide_test   
     jmp move_back
 
-    
-    ; MOVIMENTO PARA A DIREITA
+    ; DIREITA
     right:
     pop r5
     pop r4
     pop r3
     pop r1
-    inc r1      ; Move r1 para a direita
+    inc r1      ; Move posição +1
     
-    ; VERIFICA A PAREDE DA DIREITA, PARA EVITAR O JOGADOR DE SAIR DA ARENA
-    ; r1 = posição do jogador
+    ; Colisão com parede direita
     loadn r7, #40
     mod r7, r1, r7
-    loadn r6, #30
+    loadn r6, #30       ; Parede direita está na coluna 30
     cmp r6, r7
     jeq move_right_over
     cmp r1, r3
-    call collide_test   ; Verifica se bateu em algum inimigo quando andou
+    call collide_test
     jmp move_back
 
-    
-    ; MOVIMENTO PARA BAIXO
+    ; BAIXO
     down:
     pop r5
     pop r4
     pop r3
     pop r1
     
-    ; VERIFICA A PAREDE DE BAIXO, PARA EVITAR O JOGADOR DE SAIR DA ARENA
-    ; r1 = posição do jogador
+    ; Colisão com parede de baixo
     loadn r7, #40
-    add r1, r1, r7      ; Move r1 para baixo
-    loadn r7, #1050
+    add r1, r1, r7      ; Move posição +40 (linha de baixo)
+    loadn r7, #1050     ; Limite inferior da tela jogável
     cmp r1, r7
     jeg move_down_over
     cmp r1, r3
-    call collide_test   ; Verifica se bateu em algum inimigo quando andou
+    call collide_test
     jmp move_back
 
-
-    ; MOVIMENTO PARA CIMA
+    ; CIMA
     up:
     pop r5
     pop r4
     pop r3
     pop r1
     
-    ; VERIFICA A PAREDE DE CIMA, PARA EVITAR O JOGADOR DE SAIR DA ARENA
-    ; r1 = posição do jogador
+    ; Colisão com parede de cima
     loadn r7, #40
-    sub r1, r1, r7      ; Move r1 para cima
-    loadn r7, #320
+    sub r1, r1, r7      ; Move posição -40 (linha de cima)
+    loadn r7, #320      ; Limite superior da tela jogável
     cmp r1, r7
     jel move_up_over
     cmp r1, r3
-    call collide_test   ; Verifica se bateu em algum inimigo quando andou
+    call collide_test
     jmp move_back
 
-
-    ; CORREÇÃO EM CASO DE COLISÃO COM A PAREDE
-    
+    ; --- Correções de Limite (Undo Move) ---
     move_down_over:
     loadn r7, #40
-    sub r1, r1, r7      ; Corrige o valor de r1
-    jmp move_back       ; Imprime a nave com r1 corrigido
+    sub r1, r1, r7      ; Sobe de volta
+    jmp move_back
 
     move_up_over:
     loadn r7, #40
-    add r1, r1, r7
+    add r1, r1, r7      ; Desce de volta
     jmp move_back
 
     move_left_over:
     loadn r7, #1200
-    inc r1
+    inc r1              ; Vai pra direita
     jmp move_back
 
     move_right_over:
     loadn r7, #1200
-    dec r1
+    dec r1              ; Vai pra esquerda
     jmp move_back
 
 
-; - CHECA COLISÃO COM CADA UM DOS INIMIGOS (r3, r5 e r4)
+; ==============================================================================
+;                         COLISÃO E MORTE
+; ==============================================================================
+
+; Verifica se r1 (nave) está sobrepondo r3, r4 ou r5 (inimigos)
+; Os inimigos têm largura de 3 blocos (pos, pos+1, pos+2)
 collide_test:
     push r0
     push r2
 
     loadn r0, #0
     
-    
-    ; Teste primeiro inimigo (r3)
-    cmp r3, r0          ; Verifica se existe o inimigo
+    ; Teste Inimigo 1 (r3)
+    cmp r3, r0          ; Se r3 for 0, não existe inimigo, pula
     jeq check_r5_col
 
-    cmp r1, r3          ; Bateu na esquerda do bloco?
+    cmp r1, r3          ; Bateu na parte esquerda?
     jeq collide
 
     mov r2, r3
-    inc r2              ; Bloco do meio
-    cmp r1, r2          ; Bateu no bloco do meio?
+    inc r2              
+    cmp r1, r2          ; Bateu no meio?
     jeq collide
 
-    inc r2              ; Bloco da direita
-    cmp r1, r2          ; Bateu no bloco da direita?
+    inc r2              
+    cmp r1, r2          ; Bateu na direita?
     jeq collide
     
-    
-    ; Teste do segundo inimigo (r5)
+    ; Teste Inimigo 2 (r5)
     check_r5_col:
     cmp r5, r0
     jeq check_r4_col
@@ -350,8 +357,7 @@ collide_test:
     cmp r1, r2
     jeq collide
 
-
-    ; Teste do terceiro inimigo (r4)
+    ; Teste Inimigo 3 (r4)
     check_r4_col:
     cmp r4, r0
     jeq end_collide_block
@@ -374,10 +380,9 @@ collide_test:
     rts
 
 
-; - SE COLIDIR, TERMINA O JOGO
+; - ANIMAÇÃO DE MORTE E FIM DE JOGO
 collide:
-
-    ; Desenha uma explosão ao redor da nave
+    ; Desenha uma "explosão" visual ao redor de r1
     loadn r7, #41
     sub r1, r1, r7
     loadn r6, #299
@@ -405,45 +410,39 @@ collide:
     loadn r6, #558
     outchar r6, r1
     
-    ; Vai para a tela final
-    jmp game_over_screen
+    jmp game_over_screen ; Vai para a tela de fim de jogo
 
 
+; ==============================================================================
+;                         INIMIGOS (SPAWN E MOVIMENTO)
+; ==============================================================================
 
-
-;=================================================
-;             INIMIGOS
-;=================================================
-
-; - SPAWNA INIMIGO NA POSIÇÃO CRIADA POR RANDOM_POS
 spawn_enemy:
     push r0
     push r1
     push r7
 
-    ; Decide se vai spawnar (Aleatoriedade)
+    ; RNG para decidir SE spawna
     call random
     loadn r0, #15
     mod r7, r7, r0
     loadn r0, #0
     cmp r7, r0
-    jne spawn_end       ; Se não for 0, não spawna nada agora
+    jne spawn_end       ; Se não der 0 (1 em 15 chances), sai
     
-    
-    ; Tenta preencher o slot 1 (r3)
+    ; Tenta slot 1 (r3)
     loadn r0, #0
-    cmp r3, r0              ; Verifica se r3 está ocupado
-    jne try_spawn_r5        ; Se estiver: vai para o slot 2 (r5)
-    call get_random_pos     ; Se não estiver, continua criando o inimigo
+    cmp r3, r0              ; r3 está livre?
+    jne try_spawn_r5        
+    call get_random_pos     ; Calcula posição X aleatória
     mov r3, r7
     loadn r0, #'X'
-    loadn r1, #2304         ; Carrega a cor VERMELHO
-    add r0, r0, r1          ; Soma: X + Vermelho = X Vermelho
-    outchar r0, r3
+    loadn r1, #2304         ; Cor VERMELHO
+    add r0, r0, r1          
+    outchar r0, r3          ; Desenha
     jmp spawn_end           
 
-
-    ; Tenta preencher o slot 2 (r5)
+    ; Tenta slot 2 (r5)
     try_spawn_r5:
     cmp r5, r0
     jne try_spawn_r4
@@ -455,8 +454,7 @@ spawn_enemy:
     outchar r0, r5
     jmp spawn_end
 
-
-    ; Tenta preencher o slot 3 (r4)
+    ; Tenta slot 3 (r4)
     try_spawn_r4:
     cmp r4, r0
     jne spawn_end
@@ -473,19 +471,18 @@ spawn_enemy:
     pop r0
     rts
 
-
-; - MOVIMENTA OS INIMIGOS ATÉ O FINAL DA TELA, E ELIMINA SE NECESSÁRIO
+; Move inimigos para baixo, apaga rastro e verifica se chegaram ao fim da tela
 move_enemies:
     push r0
     push r1
     push r2
 
-    ; Inimigo do slot 1 (r3)
+    ; --- Inimigo 1 (r3) ---
     loadn r0, #0
     cmp r3, r0
-    jeq move_r5_block       ; Se o inimigo não existe, vai para o slot 2
+    jeq move_r5_block       ; Se vazio, pula
 
-    ; Apaga o inimigo na posicão atual (desenha 3 espaços pretos)
+    ; Apaga posição antiga (3 chars de largura)
     mov r2, r3
     outchar r0, r2
     inc r2
@@ -493,33 +490,32 @@ move_enemies:
     inc r2
     outchar r0, r2
 
-    ; Vai para a linha de baixo (soma 40)
+    ; Desce uma linha (+40)
     loadn r1, #40
     add r3, r3, r1
 
-    ; Verifica se bateu no chão
+    ; Verifica chão (limite 1080)
     loadn r1, #1080
     cmp r3, r1
-    jgr kill_r3             ; Se passou do chão pula para a eliminação do inimigo
+    jgr kill_r3             ; Passou do chão -> destrói e pontua
 
-    ; Desenha o inimigo na posição nova
+    ; Redesenha na nova posição
     loadn r1, #'X'
-    loadn r6, #2304         ; VERMELHO
-    add r1, r1, r6          ; Soma o caractere e a cor
+    loadn r6, #2304         ; Vermelho
+    add r1, r1, r6          
     mov r2, r3                 
-    outchar r1, r2          ; Desenha os inimigos nas posições novas
+    outchar r1, r2          
     inc r2
     outchar r1, r2
     inc r2
     outchar r1, r2
-    jmp move_r5_block       ; Pula a função de eliminar o bloco
+    jmp move_r5_block       
 
     kill_r3:
-    call add_score          ; Ganha um ponto
-    loadn r3, #0            ; Libera o slot para o spawn de um novo inimigo
+    call add_score          ; Aumenta score
+    loadn r3, #0            ; Libera slot r3
 
-    
-    ; Inimigo do slot 2 (r5)
+    ; --- Inimigo 2 (r5) ---
     move_r5_block:
     cmp r5, r0
     jeq move_r4_block
@@ -552,8 +548,7 @@ move_enemies:
     call add_score
     loadn r5, #0
 
-
-    ; Inimigo do slot 3 (r4)
+    ; --- Inimigo 3 (r4) ---
     move_r4_block:
     cmp r4, r0
     jeq move_end_block
@@ -593,23 +588,22 @@ move_enemies:
     rts
 
 
+; ==============================================================================
+;                         GUI (INTERFACE GRÁFICA)
+; ==============================================================================
 
-
-;=================================================
-;             GUI
-;=================================================
-
-; - IMPRIME AS PAREDES DO JOGO
+; Desenha as paredes da arena
 print_cage:
   push r1
   push r2
   push r3
   push r4
 
-  loadn r1, #210
-  loadn r2, #40
+  ; Parede Esquerda
+  loadn r1, #210   ; Posição inicial
+  loadn r2, #40    ; Pulo de linha
   loadn r3, #0
-  loadn r4, #22
+  loadn r4, #22    ; Altura
 
   print_esq:
   outchar r2, r1
@@ -618,6 +612,7 @@ print_cage:
   cmp r3, r4
   jne print_esq
 
+  ; Parede Direita
   loadn r1, #230
   loadn r2, #41
   loadn r3, #0
@@ -631,8 +626,9 @@ print_cage:
   cmp r3, r4
   jne print_dir
 
+  ; Parede Inferior (Chão)
   loadn r1, #1090
-  loadn r2, #61
+  loadn r2, #61     ; Caractere '='
   loadn r3, #0
   loadn r4, #21
 
@@ -650,21 +646,15 @@ print_cage:
   rts
 
 
-; - TELA DE GAME OVER 
+; Tela de Game Over
 game_over_screen:
     call clear_screen          
-    call print_gameover_static 
+    call print_gameover_static ; Desenha texto estático ("GAME OVER")
     
-
-   
-
+    loadn r1, #664             ; Posição para imprimir o score
+    call print_score_final     ; Imprime números do score
     
-    loadn r1, #664             
-    call print_score_final     
-    
-  
-
-    jmp main               
+    jmp main                   ; Reinicia o jogo
     
 print_gameover_static:
     push r0
@@ -695,7 +685,7 @@ print_gameover_static:
     rts
     
     
-; - IMPRIME O SCORE NA TELA
+; Imprime Score durante o jogo (Canto superior direito, amarelo)
 print_score:
     push r0
     push r1
@@ -703,43 +693,43 @@ print_score:
     push r3
     push r4
     push r5
-    push r6 ; Protege r6 que será usado como caractere colorido
+    push r6 
 
     load r0, score
-    loadn r4, #10 ; Divisor 10
-    loadn r2, #48 ; ASCII '0'
-    loadn r5, #2816 ; Carrega a cor AMARELO
+    loadn r4, #10   ; Divisor para separar casas decimais
+    loadn r2, #48   ; Código ASCII do '0'
+    loadn r5, #2816 ; Cor AMARELO
 
-; --- Dígito 1 (Unidade) ---
-    mod r1, r0, r4; r1 = Dígito
-    div r0, r0, r4 ; r0 = Resto (Próxima divisão)
+    ; --- Dígito 1 (Unidade) ---
+    mod r1, r0, r4 ; Pega o resto da divisão por 10 (ex: 123 -> 3)
+    div r0, r0, r4 ; Atualiza r0 dividindo por 10 (ex: 123 -> 12)
     
-    add r6, r1, r2 ; r6 = Dígito ASCII
-    add r6, r6, r5 ; r6 = Dígito AMARELO
+    add r6, r1, r2 ; Converte int para ASCII
+    add r6, r6, r5 ; Adiciona Cor
     
-    loadn r3, #245 ; Posição do digito 1
-    outchar r6, r3 ; Imprime
+    loadn r3, #245 ; Posição na tela
+    outchar r6, r3 
     
-; --- Dígito 2 (Dezena) ---
-    mod r1, r0, r4 ; r1 = Dígito
-    div r0, r0, r4 ; r0 = Resto
+    ; --- Dígito 2 (Dezena) ---
+    mod r1, r0, r4 
+    div r0, r0, r4 
     
-    add r6, r1, r2 ; r6 = Dígito ASCII
-    add r6, r6, r5 ; r6 = Dígito AMARELO
+    add r6, r1, r2 
+    add r6, r6, r5 
     
-    loadn r3, #244 ; Posição do digito 2
+    loadn r3, #244 
     outchar r6, r3
     
-; --- Dígito 3 (Centena) ---
-    mod r1, r0, r4 ; r1 = Dígito
+    ; --- Dígito 3 (Centena) ---
+    mod r1, r0, r4 
     
-    add r6, r1, r2 ; r6 = Dígito ASCII
-    add r6, r6, r5 ; r6 = Dígito AMARELO
+    add r6, r1, r2 
+    add r6, r6, r5 
     
-    loadn r3, #243 ; Posição do digito 3
+    loadn r3, #243 
     outchar r6, r3
 
-    pop r6 ; Restaura r6
+    pop r6 
     pop r5
     pop r4
     pop r3
@@ -749,25 +739,25 @@ print_score:
     rts
     
     
-; - IMPRIME STRING
+; Imprime uma string terminada em 0 (padrão C)
 print_string_pos:
     push r0
     push r1
     push r2
     push r3
     
-    mov r2, r0     
-    mov r3, r1      
+    mov r2, r0      ; r2 aponta memória
+    mov r3, r1      ; r3 aponta tela
     
     print_string_loop:
-        loadi r0, r2      
+        loadi r0, r2      ; Carrega char indireto
         loadn r1, #0
-        cmp r0, r1         
+        cmp r0, r1        ; Verifica fim da string ('\0')
         jeq print_string_end
         
-        outchar r0, r3      
-        inc r2              
-        inc r3            
+        outchar r0, r3    ; Imprime
+        inc r2            ; Próximo char RAM
+        inc r3            ; Próximo char Tela
         jmp print_string_loop
         
     print_string_end:
@@ -778,17 +768,15 @@ print_string_pos:
     rts
     
     
-; - LIMPA TODOS OS CARACTERES DA TELA
+; Limpa a tela inteira (preenche com 0/preto)
 clear_screen:
     push r0
     push r1
     push r2
     
     loadn r0, #0     
-                     
-    
-    loadn r1, #0     
-    loadn r2, #1200  
+    loadn r1, #0     ; Inicio Tela
+    loadn r2, #1200  ; Total Tela (30x40)
     
     clear_loop:
     outchar r0, r1  
@@ -802,7 +790,7 @@ clear_screen:
     rts
     
     
-; - IMPRIME SOMENTE OS PONTOS NA TELA DE GAME OVER
+; Imprime Score na tela de Game Over (Branco, centralizado)
 print_score_final:
     push r0
     push r1
@@ -817,7 +805,7 @@ print_score_final:
     loadn r4, #10       
     mov r3, r1          
 
-   
+    ; Milhar
     loadn r5, #1000
     div r6, r0, r5      
     mod r6, r6, r4    
@@ -825,7 +813,7 @@ print_score_final:
     outchar r6, r3      
     inc r3              
 
-    
+    ; Centena
     loadn r5, #100
     div r6, r0, r5      
     mod r6, r6, r4      
@@ -833,6 +821,7 @@ print_score_final:
     outchar r6, r3
     inc r3
 
+    ; Dezena
     loadn r5, #10
     div r6, r0, r5      
     mod r6, r6, r4
@@ -840,7 +829,7 @@ print_score_final:
     outchar r6, r3
     inc r3
 
-    
+    ; Unidade
     mod r6, r0, r4     
     add r6, r6, r2
     outchar r6, r3      
@@ -856,11 +845,12 @@ print_score_final:
     
     
 
-;=================================================
-;             MISC
-;=================================================
+; ==============================================================================
+;                         FERRAMENTAS E UTILITÁRIOS
+; ==============================================================================
 
-; - GERA UM VALOR ALEATORIO
+; - GERA UM VALOR ALEATÓRIO
+; Usa Linear Congruential Generator: Next = (a * Prev + c) % m
 random:
     push r0
     push r1
@@ -875,16 +865,16 @@ random:
     mul r3, r3, r0
     add r3, r3, r1
 
-    ; === Incrementa o c a cada chamada ===
+    ; Incrementa 'c' a cada chamada para variar mais a sequência
     inc r1
     inc r3
     store random_c, r1
     add r3, r3, r1
-    ; =============================================
-    mod r3, r3, r2
+    
+    mod r3, r3, r2  ; Aplica o módulo
 
-    store random_x, r3
-    mov r7, r3
+    store random_x, r3 ; Salva nova semente
+    mov r7, r3         ; Retorna em r7
 
     pop r3
     pop r2
@@ -893,74 +883,75 @@ random:
     rts
 
 
-; - TRANSFORMA O VALOR ALEATORIO EM UMA COORDENADA PARA GERAR UM INIMIGO
+; Calcula coordenada X aleatória válida para spawnar inimigo
+; Deve cair dentro das paredes (coluna 11 até 28 aprox)
 get_random_pos:
     push r0
 
     call random
 
-    loadn r0, #17
+    loadn r0, #17      ; Limita largura
     mod r7, r7, r0
 
-    loadn r0, #11
+    loadn r0, #11      ; Adiciona Offset (pula parede esquerda)
     add r7, r7, r0
 
-    loadn r0, #80
+    loadn r0, #80      ; Adiciona Offset Y (começa na linha 2)
     add r7, r7, r0
 
     pop r0
     rts
 
 
-; - CONSOME CICLOS DO PROCESSADOR PARA AJUSTAR A VELOCIDADE DO JOGO
+; - DELAY (CONTROLE DE VELOCIDADE)
+; Queima ciclos de CPU para o jogo não rodar instantaneamente
 delay:
   push r0
   push r1
   
-  load r1, game_speed   
+  load r1, game_speed   ; Carrega valor atual de delay
   
   delay1:
     loadn r0, #100      
       delay2:
         dec r0
-        jnz delay2
+        jnz delay2      ; Loop interno
         dec r1
-        jnz delay1
+        jnz delay1      ; Loop externo
         
   pop r1
   pop r0
   rts
 
-; - REINICIA A PONTUAÇÃO
+; Zera o score na memória
 limpa_score:
   push r0
-  
   loadn r0, #0
   store score, r0
-  
   pop r0
   rts
         
         
-; - ADICIONA PONTOS AO SCORE
+; Adiciona ponto e AUMENTA A DIFICULDADE
 add_score:
     push r0
     push r1
     
+    ; Incrementa Score
     load r0, score      
     loadn r1, #1       
     add r0, r0, r1      
-    
     store score, r0    
     
-    call print_score   
+    call print_score   ; Atualiza HUD
     
+    ; Aumenta Velocidade (Diminui o Delay)
     push r2             
     load r2, game_speed
     loadn r1, #10        
-    sub r2, r2, r1
+    sub r2, r2, r1       ; Tira 10 ciclos do delay
     
- 
+    ; Limite de velocidade (não deixa ficar rápido demais/negativo)
     loadn r1, #200       
     cmp r2, r1
     jel skip_speed_up     
@@ -972,4 +963,3 @@ add_score:
       pop r1
       pop r0
     rts
-
