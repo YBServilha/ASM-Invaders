@@ -104,6 +104,10 @@ No nosso jogo:
 - 1050: piso da arena (não deixa passar)
 - 1080: chão para matar inimigo (amarra remoção)
 - Slots de inimigos: `r3`, `r5`, `r4`
+  
+## Vídeo explicativo
+
+- [Vídeo explicativo - ASM Invaders](https://youtu.be/yc8NHyYbCSM)
 
 ## Créditos
 
